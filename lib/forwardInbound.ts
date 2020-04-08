@@ -70,12 +70,16 @@ export default async (
   parsedMail: ParsedMail
 ): Promise<void> => {
   console.log("Attempting to forward received email to personal email");
+  console.log(aliasValue);
 
   const alias = await Alias.getAlias(aliasValue);
+  console.log(alias);
   if (alias === undefined) {
-    console.log("Skipping forwarding received email, as alias does not exist");
-    return;
+    console.log("No alias found, create alias");
+    const alias = await Alias.generateAlias(aliasValue);
+    console.log(alias);
   }
+
   const mailOptions = await generateInboundMailOptions(alias, parsedMail);
   await sendEmail(mailOptions);
   await alias.didReceiveEmail();

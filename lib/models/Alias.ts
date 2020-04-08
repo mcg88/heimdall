@@ -118,14 +118,14 @@ export default class Alias implements AliasData {
   // Static methods
 
   static async aliasExists(aliasValue: string): Promise<boolean> {
-    console.log(`Checking if alias of value=${aliasValue} exists`);
+    console.log("Checking if alias of value=${aliasValue} exists");
 
     const possibleAlias = await Alias.getAlias(aliasValue);
     return possibleAlias !== undefined;
   }
 
   static async generateAlias(description: string): Promise<Alias> {
-    console.log(`Generating new alias for description=${description}`);
+    console.log("Generating new alias for description=${description}");
 
     let generatedAliasValue: string;
     do {
@@ -133,7 +133,7 @@ export default class Alias implements AliasData {
     } while (await Alias.aliasExists(generatedAliasValue));
 
     console.log(
-      `Generated aliasValue=${generatedAliasValue} for description=${description}`
+      "Generated aliasValue=${generatedAliasValue} for description=${description}"
     );
 
     const alias = new Alias({
@@ -149,15 +149,35 @@ export default class Alias implements AliasData {
     return alias;
   }
 
+  static async createAlias(name: string): Promise<Alias> {
+    console.log("Creating new alias for ${name}");
+
+    console.log(
+      "Generated aliasValue=${generatedAliasValue} for description=${description}"
+    );
+
+    const alias = new Alias({
+      value: name,
+      description: "",
+      creationDate: new Date(),
+      countReceived: 0,
+      countSent: 0
+    });
+
+    await Alias.putAlias(alias);
+
+    return alias;
+  }
+
   static async getAlias(aliasValue: string): Promise<Alias | void> {
-    console.log(`Attempting to get alias of value=${aliasValue} from table`);
+    console.log("Attempting to get alias of value=${aliasValue} from table");
 
     const params = Alias.generateGetParams(aliasValue);
     const res = await Alias.client.get(params).promise();
     const rawAlias = res.Item;
 
     if (rawAlias === undefined) {
-      console.log(`Alias of value=${aliasValue} does not exist`);
+      console.log("Alias of value=${aliasValue} does not exist");
       return;
     }
 
@@ -190,7 +210,7 @@ export default class Alias implements AliasData {
   }
 
   static async putAlias(alias: AliasData): Promise<void> {
-    console.log(`Attempting to put alias=${alias} into table`);
+    console.log("Attempting to put alias=${alias} into table");
 
     const params = Alias.generatePutParams(alias);
     await Alias.client.put(params).promise();
